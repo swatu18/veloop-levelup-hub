@@ -27,16 +27,13 @@ input, button, textarea {
 }
 
 html, body {
-  background-color: #040508;
+  background-color: #06070c;
   color: #f8fafc;
   font-family: var(--font-sans);
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -webkit-touch-callout: none;
@@ -44,7 +41,6 @@ html, body {
 
 #root {
   width: 100%;
-  max-width: 440px;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--bg-primary);
@@ -54,35 +50,24 @@ html, body {
   overflow-x: hidden;
 }
 
-@media (min-width: 768px) {
-  body {
-    background: radial-gradient(circle at 50% 15%, #131728 0%, #030407 100%);
-    padding: 24px 0;
-  }
-  #root {
-    border-radius: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    min-height: calc(100vh - 48px);
-    max-height: 920px;
-    overflow-y: auto;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.15);
-  }
-}
-
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
+  from { opacity: 0; transform: scale(0.99); }
   to { opacity: 1; transform: scale(1); }
 }
 

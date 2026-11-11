@@ -101,8 +101,8 @@ export const EarnPage = ({ onBack, onNavigateGame }) => {
         </div>
       </div>
 
-      {/* 6 Task Cards */}
-      <div className="my-3 space-y-2 flex-1">
+      {/* 6 Task Cards (Responsive: 1 column on mobile, 2 columns on tablet/desktop) */}
+      <div className="my-4 grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
         {tasks.map((task) => {
           const IconComp = task.icon;
           const isDone = completedTasks[task.id];

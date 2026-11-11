@@ -88,8 +88,8 @@ export const ActivityPage = ({ onBack }) => {
         </button>
       </div>
 
-      {/* Activity List */}
-      <div className="my-3 space-y-2 flex-1">
+      {/* Activity List (Responsive: 1 col on mobile, 2 cols on tablet/desktop) */}
+      <div className="my-4 grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
         {exactActivities.map((act) => (
           <div
             key={act.id}

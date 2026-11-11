@@ -4,6 +4,7 @@ import { GamePage } from '../game/GamePage';
 import { EarnPage } from '../earn/EarnPage';
 import { ActivityPage } from '../activity/ActivityPage';
 import { SagaMap } from '../../components/map/SagaMap';
+import { DesktopNavbar } from '../../components/nav/DesktopNavbar';
 import { BottomNav } from '../../components/nav/BottomNav';
 import { LevelUpModal } from '../../components/levelup/LevelUpModal';
 import { useDashboard } from '../../context/DashboardContext';
@@ -19,32 +20,45 @@ export const Dashboard = () => {
 
   return (
     <div className="flex-1 flex flex-col relative w-full h-full min-h-screen" style={{ backgroundColor: '#07080E' }}>
-      {/* Dynamic Screen View */}
-      {activeScreen === 'home' && (
-        <DashboardHome onNavigate={(screen) => setActiveScreen(screen)} />
-      )}
+      {/* Desktop & Tablet Top Gaming Navigation Bar */}
+      <DesktopNavbar activeTab={activeScreen} onTabChange={handleTabChange} />
 
-      {activeScreen === 'game' && (
-        <GamePage onBack={() => setActiveScreen('home')} />
-      )}
+      {/* Screen Views (Responsive Width container on tablet & desktop) */}
+      <div className="flex-1 flex flex-col w-full">
+        {activeScreen === 'home' && (
+          <DashboardHome onNavigate={(screen) => setActiveScreen(screen)} />
+        )}
 
-      {activeScreen === 'earn' && (
-        <EarnPage 
-          onBack={() => setActiveScreen('home')} 
-          onNavigateGame={() => setActiveScreen('game')}
-        />
-      )}
+        {activeScreen === 'game' && (
+          <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+            <GamePage onBack={() => setActiveScreen('home')} />
+          </div>
+        )}
 
-      {activeScreen === 'map' && (
-        <SagaMap 
-          onBack={() => setActiveScreen('home')} 
-          onSelectLevel={(lvl) => triggerLevelUp(lvl)}
-        />
-      )}
+        {activeScreen === 'earn' && (
+          <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+            <EarnPage 
+              onBack={() => setActiveScreen('home')} 
+              onNavigateGame={() => setActiveScreen('game')}
+            />
+          </div>
+        )}
 
-      {activeScreen === 'activity' && (
-        <ActivityPage onBack={() => setActiveScreen('home')} />
-      )}
+        {activeScreen === 'map' && (
+          <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+            <SagaMap 
+              onBack={() => setActiveScreen('home')} 
+              onSelectLevel={(lvl) => triggerLevelUp(lvl)}
+            />
+          </div>
+        )}
+
+        {activeScreen === 'activity' && (
+          <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+            <ActivityPage onBack={() => setActiveScreen('home')} />
+          </div>
+        )}
+      </div>
 
       {/* Screen 5: Level Up Celebration Modal */}
       <LevelUpModal
@@ -53,7 +67,7 @@ export const Dashboard = () => {
         level={level}
       />
 
-      {/* Bottom Nav Bar (Hidden during active canvas gameplay for immersion) */}
+      {/* Mobile-only Bottom Navigation Bar */}
       {activeScreen !== 'game' && (
         <BottomNav activeTab={activeScreen} onTabChange={handleTabChange} />
       )}

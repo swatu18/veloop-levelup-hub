@@ -530,7 +530,7 @@ export const GamePage = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="flex-1 my-2 rounded-3xl border border-white/10 relative overflow-hidden flex flex-col bg-[#080911]">
+      <div className="flex-1 min-h-[440px] md:min-h-[540px] my-3 rounded-3xl border border-white/10 relative overflow-hidden flex flex-col bg-[#080911]">
         <canvas
           ref={canvasRef}
           className="w-full h-full block cursor-ew-resize touch-none"
