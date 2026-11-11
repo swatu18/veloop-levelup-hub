@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Bell, ArrowRight, ChevronRight, LogOut, X } from 'lucide-react';
+import { Menu, Bell, ArrowRight, ChevronRight, LogOut, X, Map, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
 import { PedestalBadge } from '../../components/badges/PedestalBadge';
@@ -8,6 +8,7 @@ import {
   PurpleStarGem, TasksClipboard, StreakFlame, 
   HorseshoeMagnet, Gamepad3D, ReferFriends3D, WatchPlay3D 
 } from '../../components/illustrations/GamingIcons';
+import { sounds } from '../../utils/sound';
 
 export const DashboardHome = ({ onNavigate }) => {
   const { user, signOut } = useAuth();
@@ -17,7 +18,14 @@ export const DashboardHome = ({ onNavigate }) => {
   } = useDashboard();
   
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const xpPercentage = Math.min(100, Math.round((currentXP / nextLevelXP) * 100));
+
+  const toggleSound = () => {
+    sounds.enabled = !sounds.enabled;
+    setIsMuted(!sounds.enabled);
+    if (sounds.enabled) sounds.playCoin();
+  };
 
   const earnMoreItems = [
     { id: 'watch', name: 'Watch & Earn', icon: WatchPlay3D, action: () => onNavigate('earn') },
@@ -48,13 +56,21 @@ export const DashboardHome = ({ onNavigate }) => {
           </p>
         </div>
 
-        <button 
-          onClick={() => onNavigate('activity')}
-          className="p-1.5 rounded-lg text-slate-300 hover:text-white transition-colors relative"
-        >
-          <Bell className="w-5 h-5 stroke-[2.2]" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-[#0D0E15]" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={toggleSound}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 transition-colors"
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+          </button>
+          <button 
+            onClick={() => onNavigate('activity')}
+            className="p-1.5 rounded-lg text-slate-300 hover:text-white transition-colors relative"
+          >
+            <Bell className="w-5 h-5 stroke-[2.2]" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-[#0D0E15]" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content Area */}
@@ -80,7 +96,7 @@ export const DashboardHome = ({ onNavigate }) => {
           <div className="flex items-center gap-4 relative z-10">
             {/* Left: Pedestal Badge (Level 05 on 3D gold dais) */}
             <div 
-              className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
+              className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
               onClick={() => triggerLevelUp(level)}
             >
               <PedestalBadge level={level} size={88} />
@@ -111,6 +127,16 @@ export const DashboardHome = ({ onNavigate }) => {
                   {currentXP.toLocaleString()} / {nextLevelXP.toLocaleString()} XP
                 </div>
               </div>
+
+              {/* Candy Crush Saga Map launcher pill */}
+              <button
+                onClick={() => onNavigate('map')}
+                className="mt-2.5 w-full py-1.5 px-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-wider"
+              >
+                <Map className="w-3.5 h-3.5 text-amber-400" />
+                <span>View 30-Level Saga Map</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </div>
@@ -241,7 +267,6 @@ export const DashboardHome = ({ onNavigate }) => {
               </span>
             </div>
 
-            {/* 3D Treasure Chest Overflowing with Purple Gems */}
             <div className="flex-shrink-0 transition-transform group-hover:scale-105">
               <TreasureChest size={76} />
             </div>
@@ -278,35 +303,42 @@ export const DashboardHome = ({ onNavigate }) => {
                   onClick={() => { setDrawerOpen(false); onNavigate('home'); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-slate-300 flex items-center justify-between"
                 >
-                  <span>Screen 1: Dashboard</span>
+                  <span>Dashboard Home</span>
                   <ChevronRight className="w-4 h-4 text-slate-500" />
+                </button>
+                <button 
+                  onClick={() => { setDrawerOpen(false); onNavigate('map'); }}
+                  className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-amber-400 flex items-center justify-between"
+                >
+                  <span>Saga Realm Map (30 Levels)</span>
+                  <ChevronRight className="w-4 h-4 text-amber-400/50" />
                 </button>
                 <button 
                   onClick={() => { setDrawerOpen(false); onNavigate('game'); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-slate-300 flex items-center justify-between"
                 >
-                  <span>Screen 2: XP Catcher Game</span>
+                  <span>XP Catcher Arcade Game</span>
                   <ChevronRight className="w-4 h-4 text-slate-500" />
                 </button>
                 <button 
                   onClick={() => { setDrawerOpen(false); onNavigate('earn'); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-slate-300 flex items-center justify-between"
                 >
-                  <span>Screen 4: Earn & Level Up Hub</span>
+                  <span>Earn & Level Up Hub</span>
                   <ChevronRight className="w-4 h-4 text-slate-500" />
                 </button>
                 <button 
                   onClick={() => { setDrawerOpen(false); triggerLevelUp(level); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-amber-400 flex items-center justify-between"
                 >
-                  <span>Screen 5: Level Up Celebration</span>
+                  <span>Level Up Celebration Modal</span>
                   <ChevronRight className="w-4 h-4 text-amber-400/50" />
                 </button>
                 <button 
                   onClick={() => { setDrawerOpen(false); onNavigate('activity'); }}
                   className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-xs font-semibold text-slate-300 flex items-center justify-between"
                 >
-                  <span>Screen 6: Recent Activity</span>
+                  <span>Recent Activity Ledger</span>
                   <ChevronRight className="w-4 h-4 text-slate-500" />
                 </button>
               </div>

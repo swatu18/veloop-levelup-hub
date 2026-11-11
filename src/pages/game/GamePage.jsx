@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Info, Share2, RotateCcw, Home, Check } from 'lucide-react';
+import { ArrowLeft, Info, Share2, Volume2, VolumeX, Check } from 'lucide-react';
 import { useDashboard } from '../../context/DashboardContext';
 import { StarCrestBadge } from '../../components/badges/StarCrestBadge';
+import { sounds } from '../../utils/sound';
 
 export const GamePage = ({ onBack }) => {
   const { level, currentXP, nextLevelXP, addXP, addVEs, recordActivity } = useDashboard();
   
-  // 'playing' | 'completed'
   const [gameState, setGameState] = useState('playing');
   const [timeLeft, setTimeLeft] = useState(18);
-  const [score, setScore] = useState(120);
-  const [vesCollected, setVesCollected] = useState(5);
+  const [score, setScore] = useState(0);
+  const [vesCollected, setVesCollected] = useState(0);
   const [multiplier, setMultiplier] = useState(2);
+  const [isMuted, setIsMuted] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
 
   const canvasRef = useRef(null);
@@ -20,7 +21,11 @@ export const GamePage = ({ onBack }) => {
   const popupsRef = useRef([]);
   const animationFrameId = useRef(null);
 
-  // Initialize and run game loop
+  const toggleSound = () => {
+    sounds.enabled = !sounds.enabled;
+    setIsMuted(!sounds.enabled);
+  };
+
   useEffect(() => {
     if (gameState !== 'playing') return;
 
@@ -45,12 +50,11 @@ export const GamePage = ({ onBack }) => {
 
     const basketWidth = 84;
     const basketHeight = 36;
-    const basketY = height - 52;
+    const basketY = height - 50;
 
     let lastSpawn = Date.now();
     let isGameOver = false;
 
-    // Timer countdown
     const timerInterval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -62,7 +66,6 @@ export const GamePage = ({ onBack }) => {
       });
     }, 1000);
 
-    // Touch / Mouse controls
     const handleMove = (clientX) => {
       const cRect = canvas.getBoundingClientRect();
       const relativeX = clientX - cRect.left;
@@ -87,29 +90,26 @@ export const GamePage = ({ onBack }) => {
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('touchmove', onTouchMove, { passive: true });
 
-    // Spawn falling items
     const spawnItem = () => {
       const rand = Math.random();
       let type = 'xp';
-      if (rand > 0.6) type = 've';
+      if (rand > 0.55) type = 've';
       if (rand > 0.85) type = 'gem';
 
       itemsRef.current.push({
         id: Math.random(),
         x: Math.random() * (width - 60) + 30,
         y: -25,
-        speed: 2.4 + Math.random() * 2.2,
+        speed: 2.5 + Math.random() * 2.2,
         radius: type === 'gem' ? 14 : 16,
-        type: type,
-        angle: Math.random() * Math.PI
+        type: type
       });
     };
 
-    // Render loop
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Cosmic background vertical neon rays
+      // Deep cosmic gradient
       const grad = ctx.createLinearGradient(0, 0, 0, height);
       grad.addColorStop(0, '#090B14');
       grad.addColorStop(0.5, '#0E1325');
@@ -117,19 +117,18 @@ export const GamePage = ({ onBack }) => {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
-      // Vertical neon ambient glow columns
+      // Neon vertical light columns
       const cols = [width * 0.25, width * 0.5, width * 0.75];
       cols.forEach(cx => {
         const rayGrad = ctx.createLinearGradient(cx - 20, 0, cx + 20, 0);
         rayGrad.addColorStop(0, 'rgba(245, 158, 11, 0)');
-        rayGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.04)');
+        rayGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.05)');
         rayGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
         ctx.fillStyle = rayGrad;
         ctx.fillRect(cx - 25, 0, 50, height);
       });
 
-      // Spawn items
-      if (Date.now() - lastSpawn > 500 && !isGameOver) {
+      if (Date.now() - lastSpawn > 460 && !isGameOver) {
         spawnItem();
         lastSpawn = Date.now();
       }
@@ -139,7 +138,6 @@ export const GamePage = ({ onBack }) => {
         const item = itemsRef.current[i];
         item.y += item.speed;
 
-        // Check basket collision
         const bx = basketXRef.current;
         if (
           item.y + item.radius >= basketY &&
@@ -155,15 +153,18 @@ export const GamePage = ({ onBack }) => {
             pts = 10;
             popupText = '+10 XP';
             popupColor = '#C084FC';
+            sounds.playCoin();
           } else if (item.type === 've') {
             pts = 15;
             popupText = '+1 VE';
             popupColor = '#F59E0B';
             setVesCollected(v => v + 1);
+            sounds.playCoin();
           } else if (item.type === 'gem') {
             pts = 30;
             popupText = '+30 XP';
             popupColor = '#34D399';
+            sounds.playGem();
           }
 
           setScore(s => s + pts);
@@ -180,12 +181,10 @@ export const GamePage = ({ onBack }) => {
           continue;
         }
 
-        // Draw item
         ctx.save();
         if (item.type === 'xp') {
-          // Glowing Purple XP Orb with ring
-          ctx.shadowColor = 'rgba(168, 85, 247, 0.7)';
-          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
+          ctx.shadowBlur = 14;
 
           ctx.beginPath();
           ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
@@ -207,9 +206,8 @@ export const GamePage = ({ onBack }) => {
           ctx.textBaseline = 'middle';
           ctx.fillText('XP', item.x, item.y);
         } else if (item.type === 've') {
-          // Glowing Gold V Coin
-          ctx.shadowColor = 'rgba(245, 158, 11, 0.7)';
-          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(245, 158, 11, 0.8)';
+          ctx.shadowBlur = 14;
 
           ctx.beginPath();
           ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
@@ -231,9 +229,8 @@ export const GamePage = ({ onBack }) => {
           ctx.textBaseline = 'middle';
           ctx.fillText('V', item.x, item.y);
         } else {
-          // Glowing Emerald Octahedron Gem
-          ctx.shadowColor = 'rgba(16, 185, 129, 0.8)';
-          ctx.shadowBlur = 14;
+          ctx.shadowColor = 'rgba(16, 185, 129, 0.9)';
+          ctx.shadowBlur = 16;
 
           const r = item.radius;
           ctx.beginPath();
@@ -249,7 +246,6 @@ export const GamePage = ({ onBack }) => {
           ctx.lineWidth = 1.8;
           ctx.stroke();
 
-          // Gem inner facet
           ctx.beginPath();
           ctx.moveTo(item.x, item.y - r);
           ctx.lineTo(item.x, item.y + r);
@@ -263,7 +259,7 @@ export const GamePage = ({ onBack }) => {
         }
       }
 
-      // Draw Floating Score Popups
+      // Draw Floating Popups
       for (let p = popupsRef.current.length - 1; p >= 0; p--) {
         const pop = popupsRef.current[p];
         pop.y -= 1.3;
@@ -279,19 +275,17 @@ export const GamePage = ({ onBack }) => {
         ctx.fillStyle = pop.color;
         ctx.font = '900 13px Plus Jakarta Sans, sans-serif';
         ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-        ctx.shadowBlur = 4;
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 5;
         ctx.fillText(pop.text, pop.x, pop.y);
         ctx.restore();
       }
 
-      // Draw Golden Hoop Basket with Diamond Mesh Net (from Screen 2)
+      // Draw Golden Hoop Basket with Diamond Mesh Net
       const bx = basketXRef.current;
       ctx.save();
-
-      // Golden Hoop Rim
-      ctx.shadowColor = 'rgba(245, 158, 11, 0.8)';
-      ctx.shadowBlur = 16;
+      ctx.shadowColor = 'rgba(245, 158, 11, 0.85)';
+      ctx.shadowBlur = 18;
 
       ctx.beginPath();
       ctx.ellipse(bx, basketY, basketWidth / 2, 9, 0, 0, Math.PI * 2);
@@ -305,15 +299,13 @@ export const GamePage = ({ onBack }) => {
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Mesh Net Hanging Down
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(254, 240, 138, 0.65)';
+      ctx.strokeStyle = 'rgba(254, 240, 138, 0.7)';
       ctx.lineWidth = 1.3;
 
       const netBottomY = basketY + basketHeight;
       const netBottomWidth = basketWidth * 0.45;
 
-      // Downward angled net strands (cross-hatch)
       const numLines = 8;
       for (let k = 0; k <= numLines; k++) {
         const topX = (bx - basketWidth / 2) + (basketWidth / numLines) * k;
@@ -330,7 +322,6 @@ export const GamePage = ({ onBack }) => {
         ctx.stroke();
       }
 
-      // Bottom golden ring of net
       ctx.beginPath();
       ctx.ellipse(bx, netBottomY, netBottomWidth / 2, 4, 0, 0, Math.PI * 2);
       ctx.strokeStyle = '#F59E0B';
@@ -359,10 +350,9 @@ export const GamePage = ({ onBack }) => {
 
   useEffect(() => {
     if (gameState === 'completed') {
-      const earnedXP = 30;
-      const earnedVE = 12;
-      addXP(earnedXP);
-      addVEs(earnedVE);
+      sounds.playVictory();
+      addXP(30);
+      addVEs(12);
       recordActivity('XP Catcher Reward', 've', '+10 VEs', 'coins', false);
     }
   }, [gameState]);
@@ -395,7 +385,6 @@ export const GamePage = ({ onBack }) => {
   if (gameState === 'completed') {
     return (
       <div className="flex-1 flex flex-col justify-between p-5 text-white animate-fadeIn" style={{ background: '#0D0E15' }}>
-        {/* Top Header */}
         <div className="flex items-center justify-between pb-2 border-b border-white/5">
           <button 
             onClick={onBack}
@@ -412,7 +401,6 @@ export const GamePage = ({ onBack }) => {
           </button>
         </div>
 
-        {/* Center: Star Crest Badge & Final Score */}
         <div className="my-auto py-2 flex flex-col items-center text-center">
           <h2 className="text-xl font-black text-amber-400 font-display tracking-tight uppercase">
             CHALLENGE COMPLETE!
@@ -421,12 +409,10 @@ export const GamePage = ({ onBack }) => {
             Outstanding!
           </p>
 
-          {/* 3D Star Crest on Pedestal with Confetti */}
           <div className="my-3">
             <StarCrestBadge size={140} />
           </div>
 
-          {/* FINAL SCORE */}
           <div className="mb-4">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">
               FINAL SCORE
@@ -441,7 +427,6 @@ export const GamePage = ({ onBack }) => {
             </div>
           </div>
 
-          {/* Dual Reward Cards */}
           <div className="grid grid-cols-2 gap-3 w-full max-w-xs mb-4">
             <div 
               className="p-3 rounded-2xl border flex flex-col items-center justify-center text-center"
@@ -460,7 +445,6 @@ export const GamePage = ({ onBack }) => {
             </div>
           </div>
 
-          {/* Progress Bar: Level 05 -> Level 06 */}
           <div className="w-full max-w-xs">
             <div className="flex justify-between text-[11px] font-semibold text-slate-400 mb-1.5">
               <span>Level 05</span>
@@ -478,7 +462,6 @@ export const GamePage = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Buttons */}
         <div className="space-y-2.5 pt-2 max-w-xs mx-auto w-full">
           <button
             onClick={() => setGameState('playing')}
@@ -509,10 +492,9 @@ export const GamePage = ({ onBack }) => {
     );
   }
 
-  // SCREEN 2: ACTIVE XP CATCHER GAMEPLAY
+  // SCREEN 2: ACTIVE GAMEPLAY
   return (
     <div className="flex-1 flex flex-col justify-between p-4 text-white select-none relative overflow-hidden" style={{ background: '#0D0E15' }}>
-      {/* Top Bar */}
       <div className="flex items-center justify-between pb-2 border-b border-white/5 z-10">
         <button 
           onClick={onBack}
@@ -533,14 +515,21 @@ export const GamePage = ({ onBack }) => {
           </p>
         </div>
 
-        {/* Countdown Timer (e.g. 00:18) */}
-        <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-xs font-bold text-amber-400 flex items-center gap-1">
-          <span className="text-[10px]">⏱</span>
-          <span>{formatTimer(timeLeft)}</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSound}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 transition-colors"
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+          </button>
+
+          <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 font-mono text-xs font-bold text-amber-400 flex items-center gap-1">
+            <span className="text-[10px]">⏱</span>
+            <span>{formatTimer(timeLeft)}</span>
+          </div>
         </div>
       </div>
 
-      {/* Main Game Canvas */}
       <div className="flex-1 my-2 rounded-3xl border border-white/10 relative overflow-hidden flex flex-col bg-[#080911]">
         <canvas
           ref={canvasRef}
@@ -548,13 +537,11 @@ export const GamePage = ({ onBack }) => {
           style={{ touchAction: 'none' }}
         />
         
-        {/* Floating +10 XP prompt illustration */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white/5 text-[9px] text-slate-400 pointer-events-none">
           Drag hoop or use arrow keys ← →
         </div>
       </div>
 
-      {/* Bottom HUD */}
       <div 
         className="p-3 rounded-2xl border flex items-center justify-between z-10"
         style={{
@@ -572,13 +559,11 @@ export const GamePage = ({ onBack }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* +5 VEs pill */}
           <div className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-slate-200 flex items-center gap-1">
             <span>🪙</span>
             <span>+{vesCollected} VEs</span>
           </div>
 
-          {/* 🚀 2X Multiplier pill */}
           <div className="px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-xs font-bold text-amber-400 flex items-center gap-1">
             <span>🚀</span>
             <span>{multiplier}X Multiplier</span>
