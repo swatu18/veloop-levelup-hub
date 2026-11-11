@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { X } from 'lucide-react';
+import { Gift, Gem, Target, TrendingUp, X } from 'lucide-react';
 import { PedestalBadge } from '../badges/PedestalBadge';
 import { CoinPile, GemCluster } from '../illustrations/CoinPile';
-import { useDashboard } from '../../context/DashboardContext';
 
 export const LevelUpModal = ({ isOpen, onClose, level = 5 }) => {
-  const { addVEs } = useDashboard();
 
   useEffect(() => {
     if (isOpen) {
@@ -24,14 +22,12 @@ export const LevelUpModal = ({ isOpen, onClose, level = 5 }) => {
 
   if (!isOpen) return null;
 
-  const handleClaim = () => {
-    addVEs(500);
-    onClose();
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div 
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="level-up-title"
         className="w-full max-w-xs rounded-3xl p-5 border relative text-center overflow-hidden"
         style={{
           backgroundColor: '#0E111E',
@@ -42,16 +38,20 @@ export const LevelUpModal = ({ isOpen, onClose, level = 5 }) => {
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Close level-up preview"
           className="absolute top-3 right-3 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <h2 className="text-2xl font-black text-amber-400 font-display tracking-tight uppercase">
+        <h2 id="level-up-title" className="text-2xl font-black text-amber-400 font-display tracking-tight uppercase">
           LEVEL UP!
         </h2>
         <p className="text-xs text-white font-medium mt-0.5">
-          You've reached
+          You&apos;ve reached
+        </p>
+        <p className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-amber-200/70">
+          Demo preview · rewards are not claimable
         </p>
 
         {/* Grand Golden Pedestal Badge with floating coins */}
@@ -62,7 +62,7 @@ export const LevelUpModal = ({ isOpen, onClose, level = 5 }) => {
             V
           </div>
           <div className="absolute top-2 right-4 w-6 h-6 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-[10px] font-bold text-purple-300">
-            💎
+            <Gem className="w-3 h-3" aria-hidden="true" />
           </div>
         </div>
 
@@ -94,29 +94,29 @@ export const LevelUpModal = ({ isOpen, onClose, level = 5 }) => {
         {/* 3 Perks Checklist from Reference Screen 5 */}
         <div className="text-left space-y-2 mb-4 px-1">
           <div className="flex items-center gap-2.5 text-xs text-slate-300">
-            <span className="text-base flex-shrink-0">📈</span>
+            <TrendingUp className="w-4 h-4 flex-shrink-0 text-amber-300" aria-hidden="true" />
             <span className="font-medium text-[11px]">Higher daily XP limit</span>
           </div>
           <div className="flex items-center gap-2.5 text-xs text-slate-300">
-            <span className="text-base flex-shrink-0">🎯</span>
+            <Target className="w-4 h-4 flex-shrink-0 text-amber-300" aria-hidden="true" />
             <span className="font-medium text-[11px]">Access to new challenges</span>
           </div>
           <div className="flex items-center gap-2.5 text-xs text-slate-300">
-            <span className="text-base flex-shrink-0">🎁</span>
+            <Gift className="w-4 h-4 flex-shrink-0 text-amber-300" aria-hidden="true" />
             <span className="font-medium text-[11px]">Better reward opportunities</span>
           </div>
         </div>
 
-        {/* Claim Rewards Gold Pill Button */}
+        {/* Close the local preview without changing wallet state */}
         <button
-          onClick={handleClaim}
+          onClick={onClose}
           className="w-full py-3 px-4 rounded-full font-black text-xs uppercase tracking-wider text-slate-950 transition-all active:scale-[0.98] shadow-lg"
           style={{
             background: 'linear-gradient(135deg, #FEF08A 0%, #F59E0B 50%, #D97706 100%)',
             boxShadow: '0 8px 25px rgba(245, 158, 11, 0.4)'
           }}
         >
-          Claim Rewards
+          Close preview
         </button>
       </div>
     </div>

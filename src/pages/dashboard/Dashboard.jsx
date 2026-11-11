@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DashboardHome } from './DashboardHome';
+import { LevelUpDashboard } from './LevelUpDashboard';
 import { GamePage } from '../game/GamePage';
 import { EarnPage } from '../earn/EarnPage';
 import { ActivityPage } from '../activity/ActivityPage';
@@ -12,6 +12,7 @@ import { useDashboard } from '../../context/DashboardContext';
 export const Dashboard = () => {
   // activeScreen: 'home' | 'game' | 'earn' | 'activity' | 'map'
   const [activeScreen, setActiveScreen] = useState('home');
+  const [isLevelUpPreviewOpen, setIsLevelUpPreviewOpen] = useState(false);
   const { isLevelUpModalOpen, closeLevelUpModal, level, triggerLevelUp } = useDashboard();
 
   const handleTabChange = (tabId) => {
@@ -19,14 +20,14 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col relative w-full h-full min-h-screen" style={{ backgroundColor: '#07080E' }}>
+    <div className="flex-1 flex flex-col relative w-full h-full min-h-screen" style={{ backgroundColor: '#161827' }}>
       {/* Desktop & Tablet Top Gaming Navigation Bar */}
-      <DesktopNavbar activeTab={activeScreen} onTabChange={handleTabChange} />
+      <DesktopNavbar activeTab={activeScreen} onTabChange={handleTabChange} onPreviewLevelUp={() => setIsLevelUpPreviewOpen(true)} />
 
       {/* Screen Views (Responsive Width container on tablet & desktop) */}
       <div className="flex-1 flex flex-col w-full">
         {activeScreen === 'home' && (
-          <DashboardHome onNavigate={(screen) => setActiveScreen(screen)} />
+          <LevelUpDashboard onNavigate={(screen) => setActiveScreen(screen)} onPreviewLevelUp={() => setIsLevelUpPreviewOpen(true)} />
         )}
 
         {activeScreen === 'game' && (
@@ -62,9 +63,12 @@ export const Dashboard = () => {
 
       {/* Screen 5: Level Up Celebration Modal */}
       <LevelUpModal
-        isOpen={isLevelUpModalOpen}
-        onClose={closeLevelUpModal}
-        level={level}
+        isOpen={isLevelUpModalOpen || isLevelUpPreviewOpen}
+        onClose={() => {
+          if (isLevelUpModalOpen) closeLevelUpModal();
+          setIsLevelUpPreviewOpen(false);
+        }}
+        level={isLevelUpPreviewOpen ? level + 1 : level}
       />
 
       {/* Mobile-only Bottom Navigation Bar */}

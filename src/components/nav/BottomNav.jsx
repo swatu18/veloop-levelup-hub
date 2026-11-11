@@ -12,7 +12,7 @@ export const BottomNav = ({ activeTab, onTabChange }) => {
 
   return (
     <nav 
-      className="md:hidden fixed bottom-0 left-0 right-0 w-full z-40 px-2 py-2 border-t flex items-center justify-around"
+      className="xl:hidden fixed bottom-0 left-0 right-0 w-full z-40 px-2 py-2 border-t flex items-center justify-around"
       style={{
         backgroundColor: 'rgba(10, 12, 20, 0.98)',
         borderColor: 'rgba(255, 255, 255, 0.08)',
