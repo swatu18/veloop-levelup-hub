@@ -15,6 +15,7 @@ function App() {
             {/* Direct landing on Dashboard - No login barrier */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/Lvl-Dashboard" element={<Dashboard />} />
             
             {/* Dedicated Auth Pages */}
             <Route path="/signin" element={<SignInPage />} />

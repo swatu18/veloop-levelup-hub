@@ -1,12 +1,10 @@
 import React from 'react';
-import { Home, Gamepad2, Map, Zap, History, Volume2, VolumeX, Bell, User, Sparkles } from 'lucide-react';
+import { Home, Gamepad2, Map, Zap, History, Volume2, VolumeX, Sparkles, Coins, Gem, Flame } from 'lucide-react';
 import { useDashboard } from '../../context/DashboardContext';
-import { useAuth } from '../../context/AuthContext';
 import { sounds } from '../../utils/sound';
 
-export const DesktopNavbar = ({ activeTab, onTabChange }) => {
-  const { level, veBalance, gemBalance, streakDays, triggerLevelUp } = useDashboard();
-  const { user } = useAuth();
+export const DesktopNavbar = ({ activeTab, onTabChange, onPreviewLevelUp }) => {
+  const { level, veBalance, gemBalance, streakDays } = useDashboard();
   const [isMuted, setIsMuted] = React.useState(false);
 
   const toggleSound = () => {
@@ -24,7 +22,7 @@ export const DesktopNavbar = ({ activeTab, onTabChange }) => {
   ];
 
   return (
-    <header className="hidden md:flex items-center justify-between px-8 py-3.5 border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl bg-[#090B14]/90">
+    <header className="hidden xl:flex items-center justify-between px-8 py-3.5 border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl bg-[#090B14]/90">
       {/* Left: Branding & Level */}
       <div className="flex items-center gap-4">
         <div 
@@ -33,7 +31,7 @@ export const DesktopNavbar = ({ activeTab, onTabChange }) => {
         >
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 p-[1.5px] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
             <div className="w-full h-full rounded-[14px] bg-[#0E111E] flex items-center justify-center font-black text-amber-400 text-sm">
-              05
+              {String(level).padStart(2, '0')}
             </div>
           </div>
           <div>
@@ -77,19 +75,19 @@ export const DesktopNavbar = ({ activeTab, onTabChange }) => {
       <div className="flex items-center gap-3">
         {/* VEs balance */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-black">
-          <span>🪙</span>
+          <Coins className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{veBalance.toLocaleString()} VEs</span>
         </div>
 
         {/* Gems balance */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/25 text-purple-300 text-xs font-black">
-          <span>💎</span>
+          <Gem className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{gemBalance} Gems</span>
         </div>
 
         {/* Streak */}
         <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-bold">
-          <span>🔥</span>
+          <Flame className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{streakDays}d</span>
         </div>
 
@@ -104,11 +102,11 @@ export const DesktopNavbar = ({ activeTab, onTabChange }) => {
 
         {/* Level Up celebration trigger */}
         <button
-          onClick={() => triggerLevelUp(level)}
+          onClick={onPreviewLevelUp}
           className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 text-white font-extrabold text-xs shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Claim Vault</span>
+          <span>Preview Vault</span>
         </button>
       </div>
     </header>
