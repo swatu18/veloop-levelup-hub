@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Menu, Bell, ArrowRight, ChevronRight, LogOut, X, Map, 
   Sparkles, Volume2, VolumeX, Play, Trophy, Info, Lock, 
-  HelpCircle, Check, Compass, Layers, ShieldCheck 
+  HelpCircle, Check 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
@@ -29,8 +29,6 @@ export const DashboardHome = ({ onNavigate }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showLevelInfo, setShowLevelInfo] = useState(false);
-  
-  // Interactive testing state toggles (Section 40, 41, 42)
   const [viewState, setViewState] = useState('normal'); // 'normal' | 'loading' | 'error' | 'empty'
 
   const xpNeeded = Math.max(0, nextLevelXP - currentXP);
@@ -78,19 +76,18 @@ export const DashboardHome = ({ onNavigate }) => {
   return (
     <div className="flex-1 flex flex-col pb-24 md:pb-12 text-white relative w-full" style={{ backgroundColor: '#161827' }}>
       
-      {/* Dev / Reviewer Quick State Switcher Toolbar */}
+      {/* Dev / Reviewer Quick State Switcher Bar */}
       <div className="hidden lg:flex items-center justify-between px-8 py-2 bg-[#121422] border-b border-white/5 text-[11px] font-semibold text-slate-400">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-white font-bold">Live Progression Engine</span>
+          <span className="text-white font-bold">VeLoop Live Engine</span>
           <span className="text-slate-600">|</span>
-          <span>Task 16 Verification Mode:</span>
           <div className="inline-flex rounded-lg bg-white/5 p-0.5 border border-white/10">
             <button
               onClick={() => setViewState('normal')}
               className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-colors ${viewState === 'normal' ? 'bg-amber-400 text-slate-950' : 'text-slate-400 hover:text-white'}`}
             >
-              Normal State
+              Normal View
             </button>
             <button
               onClick={() => setViewState('empty')}
@@ -119,7 +116,7 @@ export const DashboardHome = ({ onNavigate }) => {
             className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 font-bold transition-all"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Simulate Level Up Celebration</span>
+            <span>Simulate Level Up</span>
           </button>
           <button
             onClick={toggleSound}
@@ -131,7 +128,7 @@ export const DashboardHome = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Top Header (hidden on desktop because DesktopNavbar is visible) */}
+      {/* Mobile Top Header (Page 33 Screen 1) */}
       <header className="flex md:hidden px-4 pt-4 pb-3 items-center justify-between border-b border-white/5 sticky top-0 z-30 backdrop-blur-xl bg-[#161827]/90">
         <button 
           onClick={() => setDrawerOpen(true)}
@@ -142,7 +139,7 @@ export const DashboardHome = ({ onNavigate }) => {
         </button>
 
         <div className="text-center">
-          <h1 className="text-sm font-extrabold text-white flex items-center justify-center gap-1 font-display tracking-tight">
+          <h1 className="text-sm font-extrabold text-white font-display tracking-tight">
             Good Morning, <span className="text-amber-400">VeLooper!</span>
           </h1>
           <p className="text-[10px] text-slate-400 mt-0.5">
@@ -154,14 +151,12 @@ export const DashboardHome = ({ onNavigate }) => {
           <button
             onClick={toggleSound}
             className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 transition-colors"
-            title="Toggle Sound"
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-slate-500" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
           </button>
           <button 
             onClick={() => onNavigate('activity')}
             className="p-1.5 rounded-lg text-slate-300 hover:text-white transition-colors relative"
-            title="Activity notifications"
           >
             <Bell className="w-5 h-5 stroke-[2.2]" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-[#161827]" />
@@ -169,10 +164,10 @@ export const DashboardHome = ({ onNavigate }) => {
         </div>
       </header>
 
-      {/* Main Responsive Grid Layout (scales seamlessly across Mobile, Tablet, Laptop, Desktop, 1920px) */}
+      {/* Main Responsive Layout */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6">
         
-        {/* ROW 1: Current Level Hero + XP Progress (Left 7-8 cols) & Next Locked Reward (Right 4-5 cols) */}
+        {/* ROW 1: Current Level Hero + XP Progress & Next Locked Reward */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
           {/* MAIN LEVEL HERO CARD (Page 33 Screen 1 Exact Match) */}
@@ -181,7 +176,7 @@ export const DashboardHome = ({ onNavigate }) => {
               className="rounded-3xl p-5 sm:p-6 border relative overflow-hidden h-full flex flex-col justify-between transition-all"
               style={{
                 backgroundColor: '#1A1D30',
-                borderColor: 'rgba(245, 158, 11, 0.4)',
+                borderColor: 'rgba(245, 158, 11, 0.45)',
                 boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
               }}
             >
@@ -189,65 +184,36 @@ export const DashboardHome = ({ onNavigate }) => {
               <div 
                 className="absolute -top-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
                 style={{
-                  background: 'radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%)',
                   filter: 'blur(45px)'
                 }}
               />
 
               <div>
-                {/* Header with Level Info Tooltip */}
-                <div className="flex items-center justify-between mb-3 relative z-10">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-black uppercase tracking-wider text-amber-400 font-display">
-                      CURRENT PROGRESSION
-                    </span>
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowLevelInfo(!showLevelInfo)}
-                        className="text-slate-400 hover:text-amber-400 p-0.5 rounded transition-colors"
-                        title="Level Information"
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                      </button>
-                      {showLevelInfo && (
-                        <div className="absolute left-0 top-6 w-64 p-3 rounded-xl bg-[#0E111E] border border-amber-400/30 text-xs text-slate-300 z-30 shadow-2xl animate-fadeIn">
-                          XP helps you progress through VELOOP Rewards levels. As you reach new levels, you unlock additional rewards and experiences according to the platform's level system.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 font-extrabold text-[11px]">
-                    {xpPercentage}% Completed
-                  </span>
-                </div>
-
                 {/* Level Badge + Numerical XP */}
                 <div className="flex flex-col sm:flex-row items-center sm:items-center gap-5 sm:gap-6 relative z-10 my-2">
-                  {/* Left: Octagon Badge with LEVEL 05 */}
+                  {/* Octagon Badge with LEVEL 05 */}
                   <div 
                     className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                     onClick={() => triggerLevelUp(level)}
                     title="Click to preview celebration"
                   >
-                    <OctagonBadge level={level} size={92} />
+                    <OctagonBadge level={level} size={102} />
                   </div>
 
-                  {/* Right: XP Values and Progress */}
+                  {/* XP Values and Progress */}
                   <div className="flex-1 min-w-0 w-full text-center sm:text-left">
                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
                       <div>
-                        <div className="flex items-baseline justify-center sm:justify-start gap-2">
-                          <span className="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight font-display leading-none">
-                            {currentXP.toLocaleString()} XP
-                          </span>
-                        </div>
+                        <span className="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight font-display leading-none block">
+                          {currentXP.toLocaleString()} XP
+                        </span>
                         <span className="text-xs sm:text-sm text-slate-300 font-semibold block mt-1">
                           to reach Level {String(level + 1).padStart(2, '0')}
                         </span>
                       </div>
 
-                      {/* Required XP - Section 13 Strict Requirement: Never make user calculate */}
+                      {/* Required XP calculation */}
                       <div className="mt-2 sm:mt-0 p-2 sm:p-2.5 rounded-xl bg-[#121524] border border-white/5 inline-block self-center sm:self-auto text-center sm:text-right">
                         <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">
                           XP Needed
@@ -258,7 +224,7 @@ export const DashboardHome = ({ onNavigate }) => {
                       </div>
                     </div>
 
-                    {/* Progress Bar with subtended indicators */}
+                    {/* Progress Bar */}
                     <div className="mt-4">
                       <div className="w-full h-3.5 bg-[#090B14] rounded-full p-[2px] border border-white/10 relative overflow-hidden">
                         <div 
@@ -271,8 +237,8 @@ export const DashboardHome = ({ onNavigate }) => {
                         />
                       </div>
                       <div className="flex justify-between items-center text-xs text-slate-400 font-bold mt-2 tracking-wide">
-                        <span>{currentXP.toLocaleString()} XP</span>
-                        <span className="text-slate-300">{nextLevelXP.toLocaleString()} XP Goal</span>
+                        <span>{currentXP.toLocaleString()} / {nextLevelXP.toLocaleString()} XP</span>
+                        <span className="text-amber-400 font-black">{xpPercentage}% Completed</span>
                       </div>
                     </div>
                   </div>
@@ -283,7 +249,7 @@ export const DashboardHome = ({ onNavigate }) => {
               <div className="mt-5 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-3 relative z-10">
                 <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
                   <span className="text-amber-400">💡</span>
-                  <span>Next milestone unlocks <strong>500 VEs</strong> and <strong>VIP Arcade Quests</strong>.</span>
+                  <span>Next milestone unlocks <strong>500 VEs</strong> and <strong>2X Arcade Boost</strong>.</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -306,7 +272,7 @@ export const DashboardHome = ({ onNavigate }) => {
             </div>
           </div>
 
-          {/* NEXT LEVEL REWARD & LOCKED REWARD CARD (Section 15, 16, 17) */}
+          {/* NEXT LEVEL REWARD & LOCKED REWARD CARD */}
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-between">
             <LockedNextReward 
               currentLevel={level}
@@ -381,10 +347,10 @@ export const DashboardHome = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* SECTION 18-21: LEVEL PROGRESSION ROADMAP */}
+        {/* LEVEL PROGRESSION ROADMAP */}
         <LevelRoadmap currentLevel={level} onSelectLevel={(lvl) => triggerLevelUp(lvl)} />
 
-        {/* SECTION 25 & 26: PERSONALIZED RECOMMENDATION BANNER */}
+        {/* PERSONALIZED RECOMMENDATION BANNER */}
         <div 
           className="p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all"
           style={{
@@ -419,7 +385,7 @@ export const DashboardHome = ({ onNavigate }) => {
           </button>
         </div>
 
-        {/* ROW 3: PLAY & EARN (Left 6 cols) + RECENT XP ACTIVITY (Right 6 cols) */}
+        {/* PLAY & EARN (Left) + RECENT ACTIVITY (Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
           {/* PLAY & EARN MINI GAME CARD */}

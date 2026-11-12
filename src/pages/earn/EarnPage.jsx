@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ChevronRight, CheckCircle2, BarChart2, Sparkles } from 'lucide-react';
 import { useDashboard } from '../../context/DashboardContext';
 import { 
   WatchPlay3D, TasksClipboard, ReferFriends3D, 
   Gamepad3D, StreakFlame, HorseshoeMagnet 
 } from '../../components/illustrations/GamingIcons';
+import { sounds } from '../../utils/sound';
 
 export const EarnPage = ({ onBack, onNavigateGame }) => {
   const { addXP, recordActivity } = useDashboard();
   const [completedTasks, setCompletedTasks] = useState({});
+  const [toastMessage, setToastMessage] = useState(null);
 
   const tasks = [
     {
@@ -74,15 +76,25 @@ export const EarnPage = ({ onBack, onNavigateGame }) => {
       return;
     }
 
-    if (completedTasks[task.id]) return;
+    if (completedTasks[task.id]) {
+      setToastMessage(`Already completed today!`);
+      setTimeout(() => setToastMessage(null), 2000);
+      return;
+    }
 
+    sounds.playCoin();
     addXP(task.rewardVal);
     recordActivity(task.title, task.action, task.reward, 'zap', true);
     setCompletedTasks(prev => ({ ...prev, [task.id]: true }));
+    setToastMessage(`Awesome! ${task.reward} added to your account!`);
+    setTimeout(() => setToastMessage(null), 2500);
   };
 
   return (
-    <div className="flex-1 flex flex-col p-4 pb-24 text-white animate-fadeIn" style={{ background: '#0D0E15' }}>
+    <div 
+      className="flex-1 flex flex-col p-4 pb-24 text-white animate-fadeIn" 
+      style={{ backgroundColor: '#0D0E15', minHeight: '100vh' }}
+    >
       {/* Top Header */}
       <div className="flex items-center gap-3 pb-3 border-b border-white/5">
         <button 
@@ -91,55 +103,68 @@ export const EarnPage = ({ onBack, onNavigateGame }) => {
         >
           <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
         </button>
+
         <div>
-          <h1 className="text-sm font-black tracking-tight text-white font-display uppercase">
+          <h1 className="text-sm font-black tracking-wider text-white font-display uppercase">
             EARN & LEVEL UP
           </h1>
-          <p className="text-[10px] text-slate-400">
+          <p className="text-[10px] text-slate-400 mt-0.5">
             Complete activities. Earn XP. Climb levels. Get rewards.
           </p>
         </div>
       </div>
 
-      {/* 6 Task Cards (Responsive: 1 column on mobile, 2 columns on tablet/desktop) */}
-      <div className="my-4 grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
+      {/* Toast alert */}
+      {toastMessage && (
+        <div className="my-2 p-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-xs text-center shadow-lg animate-fadeIn flex items-center justify-center gap-1.5">
+          <Sparkles className="w-4 h-4 fill-slate-950" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* 6 High-Contrast Quests List (Page 33 Screen 4) */}
+      <div className="space-y-2.5 my-3">
         {tasks.map((task) => {
-          const IconComp = task.icon;
+          const Icon = task.icon;
           const isDone = completedTasks[task.id];
 
           return (
             <div
               key={task.id}
               onClick={() => handleTaskClick(task)}
-              className="p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] group hover:border-amber-400/40"
-              style={{
-                backgroundColor: '#121524',
-                borderColor: isDone ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.08)'
-              }}
+              className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group active:scale-[0.98] ${
+                isDone 
+                  ? 'border-emerald-500/30 bg-[#0E171E] opacity-80' 
+                  : 'border-white/5 bg-[#121524] hover:border-amber-400/40 hover:-translate-y-0.5 shadow-md'
+              }`}
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                  <IconComp size={30} />
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-black/40 flex items-center justify-center p-1.5 flex-shrink-0 transition-transform group-hover:scale-110">
+                  <Icon size={30} />
                 </div>
-
-                <div className="min-w-0">
-                  <h3 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-black text-white font-display tracking-tight leading-none">
                     {task.title}
                   </h3>
-                  <p className="text-[10px] text-slate-400 truncate">
+                  <p className="text-[11px] text-slate-400 mt-1 font-medium">
                     {task.desc}
                   </p>
-                  <span className="text-[10px] font-black text-amber-400">
-                    {task.reward}
-                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 flex-shrink-0 text-slate-400 group-hover:text-amber-400 transition-colors">
+              <div className="flex items-center gap-2">
                 {isDone ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="flex items-center gap-1 text-xs font-black text-emerald-400 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>CLAIMED</span>
+                  </span>
                 ) : (
-                  <ChevronRight className="w-4 h-4 stroke-[2.2]" />
+                  <>
+                    <span className="text-xs sm:text-sm font-black text-amber-400 font-display">
+                      {task.reward}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition-colors" />
+                  </>
                 )}
               </div>
             </div>
@@ -147,23 +172,11 @@ export const EarnPage = ({ onBack, onNavigateGame }) => {
         })}
       </div>
 
-      {/* Motivational Footer Card with 3D Ascending Gold Bar Chart */}
-      <div 
-        className="p-3.5 rounded-2xl border flex items-center justify-between relative overflow-hidden"
-        style={{
-          backgroundColor: '#121524',
-          borderColor: 'rgba(255, 255, 255, 0.08)'
-        }}
-      >
-        <span className="text-xs font-bold text-slate-200">
-          Keep going! You're doing great!
-        </span>
-
-        {/* 3D Ascending Gold Bar Chart */}
-        <div className="flex items-end gap-1.5 h-6 flex-shrink-0">
-          <div className="w-2.5 h-3 rounded-t-sm bg-gradient-to-t from-amber-600 to-amber-400 shadow-sm" />
-          <div className="w-2.5 h-4.5 rounded-t-sm bg-gradient-to-t from-amber-500 to-amber-300 shadow-sm" />
-          <div className="w-2.5 h-6 rounded-t-sm bg-gradient-to-t from-amber-400 to-yellow-200 shadow-sm" />
+      {/* Motivation Footer (Page 33 Screen 4) */}
+      <div className="mt-auto pt-3">
+        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center gap-2 text-xs font-bold text-slate-300 text-center">
+          <span>Keep going! You're doing great!</span>
+          <BarChart2 className="w-4 h-4 text-amber-400" />
         </div>
       </div>
     </div>
