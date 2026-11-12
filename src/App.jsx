@@ -12,15 +12,18 @@ function App() {
       <DashboardProvider>
         <BrowserRouter>
           <Routes>
-            {/* Direct landing on Dashboard - No login barrier */}
+            {/* Primary Dashboard Routes as specified in Task 16 PDF */}
             <Route path="/" element={<Dashboard />} />
+            <Route path="/Lvl-Dashboard" element={<Dashboard />} />
+            <Route path="/lvl-dashboard" element={<Dashboard />} />
+            <Route path="/level-dashboard" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             
             {/* Dedicated Auth Pages */}
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/Lvl-Dashboard" replace />} />
           </Routes>
         </BrowserRouter>
       </DashboardProvider>

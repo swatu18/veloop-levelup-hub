@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #07080e;
-  --bg-card: #121524;
-  --bg-card-hover: #181d32;
+  --bg-primary: #161827;
+  --bg-card: #1c1f33;
+  --bg-card-hover: #22263d;
   --border-gold: rgba(245, 158, 11, 0.35);
   --gold-primary: #f59e0b;
   --gold-light: #fbbf24;
@@ -27,7 +27,7 @@ input, button, textarea {
 }
 
 html, body {
-  background-color: #06070c;
+  background-color: #161827;
   color: #f8fafc;
   font-family: var(--font-sans);
   min-height: 100vh;

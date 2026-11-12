@@ -7,19 +7,24 @@ import { SagaMap } from '../../components/map/SagaMap';
 import { DesktopNavbar } from '../../components/nav/DesktopNavbar';
 import { BottomNav } from '../../components/nav/BottomNav';
 import { LevelUpModal } from '../../components/levelup/LevelUpModal';
+import { Page33Showcase } from '../../components/showcase/Page33Showcase';
 import { useDashboard } from '../../context/DashboardContext';
 
 export const Dashboard = () => {
-  // activeScreen: 'home' | 'game' | 'earn' | 'activity' | 'map'
+  // activeScreen: 'home' | 'game' | 'earn' | 'activity' | 'map' | 'showcase'
   const [activeScreen, setActiveScreen] = useState('home');
   const { isLevelUpModalOpen, closeLevelUpModal, level, triggerLevelUp } = useDashboard();
 
   const handleTabChange = (tabId) => {
+    if (tabId === 'rewards') {
+      triggerLevelUp(level);
+      return;
+    }
     setActiveScreen(tabId);
   };
 
   return (
-    <div className="flex-1 flex flex-col relative w-full h-full min-h-screen" style={{ backgroundColor: '#07080E' }}>
+    <div className="flex-1 flex flex-col relative w-full h-full min-h-screen" style={{ backgroundColor: '#161827' }}>
       {/* Desktop & Tablet Top Gaming Navigation Bar */}
       <DesktopNavbar activeTab={activeScreen} onTabChange={handleTabChange} />
 
@@ -58,6 +63,12 @@ export const Dashboard = () => {
             <ActivityPage onBack={() => setActiveScreen('home')} />
           </div>
         )}
+
+        {activeScreen === 'showcase' && (
+          <div className="w-full flex-1 flex flex-col">
+            <Page33Showcase onSelectScreen={(screen) => setActiveScreen(screen)} />
+          </div>
+        )}
       </div>
 
       {/* Screen 5: Level Up Celebration Modal */}
@@ -69,7 +80,11 @@ export const Dashboard = () => {
 
       {/* Mobile-only Bottom Navigation Bar */}
       {activeScreen !== 'game' && (
-        <BottomNav activeTab={activeScreen} onTabChange={handleTabChange} />
+        <BottomNav 
+          activeTab={activeScreen} 
+          onTabChange={handleTabChange}
+          onOpenProfile={() => setActiveScreen('activity')}
+        />
       )}
     </div>
   );

@@ -21,10 +21,11 @@ export const DesktopNavbar = ({ activeTab, onTabChange }) => {
     { id: 'map', label: '30-Level Saga Map', icon: Map },
     { id: 'earn', label: 'Earn & Quests', icon: Zap },
     { id: 'activity', label: 'Activity Ledger', icon: History },
+    { id: 'showcase', label: 'Page 33 Matrix', icon: Sparkles },
   ];
 
   return (
-    <header className="hidden md:flex items-center justify-between px-8 py-3.5 border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl bg-[#090B14]/90">
+    <header className="hidden md:flex items-center justify-between px-8 py-3.5 border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl bg-[#121422]/95">
       {/* Left: Branding & Level */}
       <div className="flex items-center gap-4">
         <div 
